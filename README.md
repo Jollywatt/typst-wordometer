@@ -1,5 +1,10 @@
 # `wordometer`
 
+[![Manual](https://img.shields.io/badge/docs-manual.pdf-green)](https://github.com/Jollywatt/typst-wordometer/raw/master/docs/manual.pdf)
+![Version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fgithub.com%2FJollywatt%2Ftypst-wordometer%2Fraw%2Fmaster%2Ftypst.toml&query=package.version&label=version)
+
+
+
 Basic word counts and document statistics.
 
 
