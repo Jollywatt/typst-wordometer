@@ -8,6 +8,8 @@
 Basic word counts and document statistics.
 
 
+## Basic usage
+
 ```typ
 #import "@preview/wordometer:0.1.0": word-count, total-words
 
@@ -20,3 +22,19 @@ In this document, there are #total-words words all up.
   and there are #total.characters letters.
 ])
 ```
+
+## Excluding elements by type or label
+
+```typ
+#show: word-count.with(exclude: ("heading", "strike"))
+
+= This Heading Doesn’t Count
+
+In this document #strike[(excluding me)], there are #total-words words all up.
+
+#word-count(total => [
+  One, two, three, four.
+  #[That was #total.words, excluding this sentence!] <no-wc>
+], exclude: <no-wc>)
+```
+

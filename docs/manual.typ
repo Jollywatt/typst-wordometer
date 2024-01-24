@@ -45,38 +45,39 @@
 
 #v(1fr)
 
-= Basic usage
+#[
+	#show heading: pad.with(y: 10pt)
 
-```typ
-#import "@preview/wordometer:0.1.0": word-count, total-words
+	= Basic usage
 
-#show: word-count
+	```typ
+	#import "@preview/wordometer:0.1.0": word-count, total-words
 
-In this document, there are #total-words words all up.
+	#show: word-count
 
-#word-count(total => [
-  The number of words in this block is #total.words
-  and there are #total.characters letters.
-])
-```
+	In this document, there are #total-words words all up.
 
-= Excluding elements by type or label
+	#word-count(total => [
+	  The number of words in this block is #total.words
+	  and there are #total.characters letters.
+	])
+	```
 
-```typ
+	= Excluding elements by type or label
 
-#show: word-count.with(exclude: ("heading", "strike"))
+	```typ
+	#show: word-count.with(exclude: ("heading", "strike"))
 
-= This Heading Doesn’t Count
+	= This Heading Doesn’t Count
 
-In this document #strike[(excluding me)], there are #total-words words all up.
+	In this document #strike[(excluding me)], there are #total-words words all up.
 
-#word-count(total => [
-  One, two, three, four.
-  #[That was #total.words, excluding this sentence!] <no-wc>
-], exclude: <no-wc>)
-```
-
-
+	#word-count(total => [
+	  One, two, three, four.
+	  #[That was #total.words, excluding this sentence!] <no-wc>
+	], exclude: <no-wc>)
+	```
+]
 
 #v(1fr)
 
