@@ -84,6 +84,8 @@ Stats: #word-count-of(el)
 
 = Sentences
 
+= Sentences
+
 #let el = [
 	Pour quoi ? Qu'est-ce que c'est !?
 
@@ -94,3 +96,29 @@ Stats: #word-count-of(el)
 #el
 #word-count-of(el)
 
+= Excluding elements by type
+
+#word-count(total => [
+	== Not me.
+	One, two, three. #strike[Not me, either.] Four.
+
+	#strike[Words: #total.words]
+], exclude: ("heading", "strike"))
+
+= Excluding elements by label
+
+#word-count(total => [
+	=== One two
+	Three, four.
+
+	=== Not me! <no-wc>
+	Five, six.
+
+	#total
+], exclude: ("raw", <no-wc>))
+
+
+#word-count(total => [
+  One, two, three, four.
+  #[That was #total.words, not counting this sentence!] <no-wc>
+], exclude: <no-wc>)

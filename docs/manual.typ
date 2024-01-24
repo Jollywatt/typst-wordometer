@@ -60,6 +60,22 @@ In this document, there are #total-words words all up.
 ])
 ```
 
+= Excluding elements by type or label
+
+```typ
+
+#show: word-count.with(exclude: ("heading", "strike"))
+
+= This Heading Doesn’t Count
+
+In this document #strike[(excluding me)], there are #total-words words all up.
+
+#word-count(total => [
+  One, two, three, four.
+  #[That was #total.words, excluding this sentence!] <no-wc>
+], exclude: <no-wc>)
+```
+
 
 
 #v(1fr)

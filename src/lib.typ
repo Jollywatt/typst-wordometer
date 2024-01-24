@@ -36,9 +36,13 @@
   let squashed = (children.at(0),)
 
   let as-text(el) = {
-    if el.func() == text { el.text }
-    else if repr(el.func()) == "space" { " " }
-    else if repr(el.func()) == "smartquote" {
+    let fn = repr(el.func())
+    if fn == "text" { el.text }
+    else if fn == "space" { " " }
+    else if fn in "linebreak" { "\n" }
+    else if fn in "parbreak" { "\n\n" }
+    else if fn in "pagebreak" { "\n\n\n\n" }
+    else if fn == "smartquote" {
       if el.double { "\"" } else { "'" }
     }
   }
@@ -100,12 +104,25 @@
 ///
 /// - f (function): Unary function to pass text to.
 /// - el (content): Content element to traverse.
-#let map-tree(f, el) = {
+/// - exclude (array): List of labels or element names to skip while traversing
+///  the tree. Default value includes equations and elements without child
+///  content or text:
+///  #wordometer.IGNORED_ELEMENTS.sorted().map(repr).map(raw).join([, ],
+///  last: [, and ]).
+///
+///  To exclude figures, but include figure captions, pass the name
+///  `"figure-body"` (which is not a real element). To include figure bodies,
+///  but exclude their captions, pass the name `"caption"`.
+#let map-tree(f, el, exclude: IGNORED_ELEMENTS) = {
+  let map-subtree = map-tree.with(f, exclude: exclude)
   
   let fn = repr(el.func())
   let fields = el.fields().keys()
 
-  if fn in IGNORED_ELEMENTS {
+  if fn in exclude {
+    none
+
+  } else if el.at("label", default: none) in exclude {
     none
 
   } else if fn in TEXTUAL_ELEMENTS {
@@ -120,17 +137,21 @@
     }
 
     children
-      .map(map-tree.with(f))
+      .map(map-subtree)
       .filter(x => x != none)
 
   } else if fn == "figure" {
-    (map-tree(f, el.body), map-tree(f, el.caption))
+    (
+      if "figure-body" not in exclude { map-subtree(el.body) },
+      map-subtree(el.caption),
+    )
+      .filter(x => x != none)
 
   } else if fn == "styled" {
-    map-tree(f, el.child)
+    map-subtree(el.child)
 
   } else if "body" in fields {
-    map-tree(f, el.body)
+    map-subtree(el.body)
 
   } else {
     panic(fn, el.fields())
@@ -145,10 +166,15 @@
 ///
 /// - el (content):
 /// -> dictionary
-#let word-count-of(el) = {
-  (map-tree(text-stats, el),)
-    .flatten()
+/// - exclude (array): Content elements to exclude from word count (see
+///    `map-tree()`).
+#let word-count-of(el, exclude: (:)) = {
+  let exclude-elements = IGNORED_ELEMENTS
+  exclude-elements += (exclude,).flatten()
+
+  (map-tree(text-stats, el, exclude: exclude-elements),)
     .filter(x => x != none)
+    .flatten()
     .fold(ZERO_STATS, fold-stats)
 }
 
@@ -167,26 +193,34 @@
 ///
 /// - fn (function): A function accepting a dictionary and returning content to
 ///  perform the word count on.
-#let word-count-callback(fn) = {
+/// - ..options ( ): Additional named arguments:
+///   - `exclude`: Content to exclude from word count (see `map-tree()`).
+/// -> content
+#let word-count-callback(fn, ..options) = {
   let preview-content = [#fn(ZERO_STATS)]
-  let stats = word-count-of(preview-content)
+  let stats = word-count-of(preview-content, ..options)
   fn(stats)
 }
 
 #let total-words = locate(loc => state("total-words").final(loc))
 #let total-characters = locate(loc => state("total-characters").final(loc))
 
-/// Get word count statistics of some content and store the results is a global
-/// state.
+/// Get word count statistics of the given content and store the results in
+/// global state. Should only be used once in the document.
 ///
 /// #set raw(lang: "typ")
 ///
 /// The results are accessible anywhere in the document with `#total-words` and
-/// `#total-characters`.
+/// `#total-characters`, which are shortcuts for the final values of states of
+/// the same name (e.g., `#locate(loc => state("total-words").final(loc))`)
 ///
 /// - el (content):
-#let set-word-count-state(el) = {
-  let stats = word-count-of(el)
+///   Content to word count.
+/// - ..options ( ): Additional named arguments:
+///   - `exclude`: Content to exclude from word count (see `map-tree()`).
+/// -> content
+#let word-count-global(el, ..options) = {
+  let stats = word-count-of(el, ..options)
   state("total-words").update(stats.words)
   state("total-characters").update(stats.characters)
   el
@@ -194,18 +228,26 @@
 
 /// Perform a word count.
 /// 
-/// Accepts content (in which case results are accessible with `#total-words`
-/// and `#total-characters`) or a callback function (see
+/// Accepts content (see `word-count-global()`) or a callback function (see
 /// `word-count-callback()`).
-///
-/// Passing content only works if you do it once in your document, because the
-/// results are stored in a global state. For multiple word counts, use the
-/// callback style.
 /// - arg (content, fn):
-#let word-count(arg) = {
+///   Can be:
+///   #set raw(lang: "typ")
+///   - `content`: A word count is performed for the content and the results are
+///    accessible through `#total-words` and `#total-characters`. This uses a
+///    global state, so should only be used once in a document (e.g., via a
+///    document show rule: `#show: word-count`).
+///   - `function`: A callback function accepting a dictionary of word count
+///    results and returning content to be word counted. For example:
+///    ```typ
+///    #word-count(total => [This sentence contains #total.characters letters.])
+///    ```
+/// - ..options ( ): Additional named arguments:
+///   - `exclude`: Content to exclude from word count (see `map-tree()`).
+#let word-count(arg, ..options) = {
   if type(arg) == function {
-    word-count-callback(arg)
+    word-count-callback(arg, ..options)
   } else {
-    set-word-count-state(arg)
+    word-count-global(arg, ..options)
   }
 }
