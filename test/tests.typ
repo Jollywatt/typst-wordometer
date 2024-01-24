@@ -117,6 +117,7 @@ Stats: #word-count-of(el)
 	#total
 ], exclude: ("raw", <no-wc>))
 
+#line(length: 100%)
 
 #word-count(total => [
   One, two, three, four.

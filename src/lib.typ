@@ -1,19 +1,22 @@
-#let ZERO_STATS  = (
-  characters: 0,
-  words: 0,
-  sentences: 0,
-)
-
 #let fold-stats(a, b) = (
   characters: a.characters + b.characters,
   words: a.words + b.words,
   sentences: a.sentences + b.sentences,
 )
 
+/// Get a word count from a string. 
+///
+/// Returns a dictionary with keys:
+/// - `characters`: Number of non-whitespace characters.
+/// - `words`: Number of words, defined by `regex("\b[\w'’]+\b")`.
+/// - `sentences`: Number of sentences, defined by `regex("\w+\s*[.?!]")`.
+///
+/// - string (string): 
+/// -> dictionary
 #let text-stats(string) = (
-  characters: string.replace(" ", "").len(),
+  characters: string.replace(regex("\s+"), "").len(),
   words: string.matches(regex("\b[\w'’]+\b")).len(),
-  sentences: string.matches(regex("\w+\s*[.?!]\W*")).len(),
+  sentences: string.matches(regex("\w+\s*[.?!]")).len(),
 )
 
 /// Simplify an array of content by concatenating adjacent text elements.
@@ -68,13 +71,6 @@
   squashed
 }
 
-
-
-#let TEXTUAL_ELEMENTS = (
-  "raw",
-  "text",
-)
-
 #let IGNORED_ELEMENTS = (
   "display",
   "equation",
@@ -96,14 +92,14 @@
   "v",
 )
 
-/// Traverse a content tree and apply a function to texual leaf nodes.
+/// Traverse a content tree and apply a function to textual leaf nodes.
 ///
 /// Descends into elements until reaching a textual element (`text` or `raw`)
 /// and calls `f` on the contained text, returning a (nested) array of all the
 /// return values.
 ///
 /// - f (function): Unary function to pass text to.
-/// - el (content): Content element to traverse.
+/// - content (content): Content element to traverse.
 /// - exclude (array): List of labels or element names to skip while traversing
 ///  the tree. Default value includes equations and elements without child
 ///  content or text:
@@ -113,23 +109,23 @@
 ///  To exclude figures, but include figure captions, pass the name
 ///  `"figure-body"` (which is not a real element). To include figure bodies,
 ///  but exclude their captions, pass the name `"caption"`.
-#let map-tree(f, el, exclude: IGNORED_ELEMENTS) = {
+#let map-tree(f, content, exclude: IGNORED_ELEMENTS) = {
   let map-subtree = map-tree.with(f, exclude: exclude)
   
-  let fn = repr(el.func())
-  let fields = el.fields().keys()
+  let fn = repr(content.func())
+  let fields = content.fields().keys()
 
   if fn in exclude {
     none
 
-  } else if el.at("label", default: none) in exclude {
+  } else if content.at("label", default: none) in exclude {
     none
 
-  } else if fn in TEXTUAL_ELEMENTS {
-    f(el.text)
+  } else if fn in ("text", "raw") {
+    f(content.text)
 
   } else if "children" in fields {
-    let children = el.children
+    let children = content.children
 
     if fn == "sequence" {
       // don't do this for, e.g., grid or stack elements
@@ -142,19 +138,19 @@
 
   } else if fn == "figure" {
     (
-      if "figure-body" not in exclude { map-subtree(el.body) },
-      map-subtree(el.caption),
+      if "figure-body" not in exclude { map-subtree(content.body) },
+      map-subtree(content.caption),
     )
       .filter(x => x != none)
 
   } else if fn == "styled" {
-    map-subtree(el.child)
+    map-subtree(content.child)
 
   } else if "body" in fields {
-    map-subtree(el.body)
+    map-subtree(content.body)
 
   } else {
-    panic(fn, el.fields())
+    panic(fn, content.fields())
 
   }
 
@@ -162,20 +158,21 @@
 
 /// Get word count statistics of a content element.
 ///
-/// Returns a results dictionary, not the content passed to it.
+/// Returns a results dictionary, not the content passed to it. (See
+/// `text-stats()`).
 ///
-/// - el (content):
+/// - content (content):
 /// -> dictionary
 /// - exclude (array): Content elements to exclude from word count (see
 ///    `map-tree()`).
-#let word-count-of(el, exclude: (:)) = {
+#let word-count-of(content, exclude: (:)) = {
   let exclude-elements = IGNORED_ELEMENTS
   exclude-elements += (exclude,).flatten()
 
-  (map-tree(text-stats, el, exclude: exclude-elements),)
+  (map-tree(text-stats, content, exclude: exclude-elements),)
     .filter(x => x != none)
     .flatten()
-    .fold(ZERO_STATS, fold-stats)
+    .fold(text-stats(""), fold-stats)
 }
 
 /// Simultaneously take a word count of some content and insert it into that
@@ -197,7 +194,7 @@
 ///   - `exclude`: Content to exclude from word count (see `map-tree()`).
 /// -> content
 #let word-count-callback(fn, ..options) = {
-  let preview-content = [#fn(ZERO_STATS)]
+  let preview-content = [#fn(text-stats(""))]
   let stats = word-count-of(preview-content, ..options)
   fn(stats)
 }
@@ -214,22 +211,23 @@
 /// `#total-characters`, which are shortcuts for the final values of states of
 /// the same name (e.g., `#locate(loc => state("total-words").final(loc))`)
 ///
-/// - el (content):
+/// - content (content):
 ///   Content to word count.
 /// - ..options ( ): Additional named arguments:
 ///   - `exclude`: Content to exclude from word count (see `map-tree()`).
 /// -> content
-#let word-count-global(el, ..options) = {
-  let stats = word-count-of(el, ..options)
+#let word-count-global(content, ..options) = {
+  let stats = word-count-of(content, ..options)
   state("total-words").update(stats.words)
   state("total-characters").update(stats.characters)
-  el
+  content
 }
 
 /// Perform a word count.
 /// 
 /// Accepts content (see `word-count-global()`) or a callback function (see
 /// `word-count-callback()`).
+/// 
 /// - arg (content, fn):
 ///   Can be:
 ///   #set raw(lang: "typ")
@@ -244,6 +242,8 @@
 ///    ```
 /// - ..options ( ): Additional named arguments:
 ///   - `exclude`: Content to exclude from word count (see `map-tree()`).
+///
+/// -> dictionary
 #let word-count(arg, ..options) = {
   if type(arg) == function {
     word-count-callback(arg, ..options)
