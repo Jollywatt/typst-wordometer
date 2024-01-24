@@ -84,8 +84,6 @@ Stats: #word-count-of(el)
 
 = Sentences
 
-= Sentences
-
 #let el = [
 	Pour quoi ? Qu'est-ce que c'est !?
 

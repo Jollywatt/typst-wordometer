@@ -1,10 +1,12 @@
-#let fold-stats(a, b) = (
-  characters: a.characters + b.characters,
-  words: a.words + b.words,
-  sentences: a.sentences + b.sentences,
-)
+#let dictionary-sum(a, b) = {
+  let c = (:)
+  for k in a.keys() + b.keys() {
+    c.insert(k, a.at(k, default: 0) + b.at(k, default: 0))
+  }
+  c
+}
 
-/// Get a word count from a string. 
+/// Get a basic word count from a string. 
 ///
 /// Returns a dictionary with keys:
 /// - `characters`: Number of non-whitespace characters.
@@ -13,7 +15,7 @@
 ///
 /// - string (string): 
 /// -> dictionary
-#let text-stats(string) = (
+#let string-word-count(string) = (
   characters: string.replace(regex("\s+"), "").len(),
   words: string.matches(regex("\b[\w'’]+\b")).len(),
   sentences: string.matches(regex("\w+\s*[.?!]")).len(),
@@ -159,20 +161,30 @@
 /// Get word count statistics of a content element.
 ///
 /// Returns a results dictionary, not the content passed to it. (See
-/// `text-stats()`).
+/// `string-word-count()`).
 ///
 /// - content (content):
 /// -> dictionary
 /// - exclude (array): Content elements to exclude from word count (see
 ///    `map-tree()`).
-#let word-count-of(content, exclude: (:)) = {
+/// - counter (fn): A function that accepts a string and returns a dictionary of
+///  counts.
+///
+///  For example, to count vowels, you might do:
+///
+///  ```typ
+///  #word-count-of([ABCDEFG], counter: s => (
+///      vowels: lower(s).matches(regex("[aeiou]")).len(),
+///  ))
+///  ```
+#let word-count-of(content, exclude: (:), counter: string-word-count) = {
   let exclude-elements = IGNORED_ELEMENTS
   exclude-elements += (exclude,).flatten()
 
-  (map-tree(text-stats, content, exclude: exclude-elements),)
+  (map-tree(counter, content, exclude: exclude-elements),)
     .filter(x => x != none)
     .flatten()
-    .fold(text-stats(""), fold-stats)
+    .fold(counter(""), dictionary-sum)
 }
 
 /// Simultaneously take a word count of some content and insert it into that
@@ -194,7 +206,7 @@
 ///   - `exclude`: Content to exclude from word count (see `map-tree()`).
 /// -> content
 #let word-count-callback(fn, ..options) = {
-  let preview-content = [#fn(text-stats(""))]
+  let preview-content = [#fn(string-word-count(""))]
   let stats = word-count-of(preview-content, ..options)
   fn(stats)
 }
@@ -223,10 +235,10 @@
   content
 }
 
-/// Perform a word count.
+/// Perform a word count on content.
 /// 
-/// Accepts content (see `word-count-global()`) or a callback function (see
-/// `word-count-callback()`).
+/// Master function which accepts content (calling `word-count-global()`) or a
+/// callback function (calling `word-count-callback()`).
 /// 
 /// - arg (content, fn):
 ///   Can be:
