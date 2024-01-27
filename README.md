@@ -28,9 +28,10 @@ In this document, there are #total-words words all up.
 ## Excluding elements by type or label
 
 ```typ
-#show: word-count.with(exclude: (heading, strike))
+#show: word-count.with(exclude: (heading.where(level: 1), strike))
 
-= This Heading Doesn’t Count
+= This Heading Doesn't Count
+== But I do!
 
 In this document #strike[(excluding me)], there are #total-words words all up.
 
