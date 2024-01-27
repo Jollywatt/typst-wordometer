@@ -192,14 +192,37 @@
 ///      vowels: lower(s).matches(regex("[aeiou]")).len(),
 ///  ))
 ///  ```
-#let word-count-of(content, exclude: (), counter: string-word-count) = {
-  let exclude-elements = IGNORED_ELEMENTS
-  exclude-elements += (exclude,).flatten()
+/// - method (string): The algorithm to use. Can be:
+///  - `"stringify"`: Convert the content into one big string, then perform the
+///   word count.
+///  - `"bubble"`: Traverse the content tree performing word counts at each
+///   textual leaf node, then "bubble" the results back up (i.e., sum them).
+///  Performance and results may vary by method!
+#let word-count-of(
+  content,
+  exclude: (),
+  counter: string-word-count,
+  method: "stringify",
+) = {
+  let exclude = IGNORED_ELEMENTS
+  exclude += (exclude,).flatten()
 
-  (map-tree(counter, content, exclude: exclude-elements),)
-    .filter(x => x != none)
-    .flatten()
-    .fold(counter(""), dictionary-sum)
+  if method == "bubble" {
+    (map-tree(counter, content, exclude: exclude),)
+      .filter(x => x != none)
+      .flatten()
+      .fold(counter(""), dictionary-sum)
+
+  } else if method == "stringify" {
+    string-word-count(
+      (map-tree(x => x + " ", content, exclude: exclude),)
+        .flatten()
+        .join()
+    )
+
+  } else {
+    panic("Unknown choice", method)
+  }
 }
 
 /// Simultaneously take a word count of some content and insert it into that
