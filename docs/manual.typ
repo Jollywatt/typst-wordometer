@@ -57,8 +57,9 @@
 
 	= Basic usage
 
+	#show "VERSION": VERSION
 	```typ
-	#import "@preview/wordometer:0.1.0": word-count, total-words
+	#import "@preview/wordometer:VERSION": word-count, total-words
 
 	#show: word-count
 
