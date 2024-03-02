@@ -143,6 +143,7 @@
 ///  `"figure-body"` (which is not a real element). To include figure bodies,
 ///  but exclude their captions, pass the name `"caption"`.
 #let map-tree(f, content, exclude: IGNORED_ELEMENTS) = {
+  if content == none { return none }
   let exclude = interpret-exclude-patterns(exclude)
   let map-subtree = map-tree.with(f, exclude: exclude)
   

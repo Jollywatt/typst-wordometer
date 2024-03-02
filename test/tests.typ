@@ -177,3 +177,17 @@ Stats: #word-count-of(el)
 
 #el
 #extract-text(el)
+
+= Issue `#1`
+
+Figures might have:
+- no `caption` field, or
+- a `caption` field with the value `none`.
+
+#let el = rect[
+	#figure([Hello from the figure body.], caption: none)
+	Ciao.
+]
+#el
+
+#word-count-of(el)
