@@ -6,7 +6,7 @@
 #include "word-count-callback/test.typ"
 #include "word-edge-cases/test.typ"
 #include "sentences/test.typ"
-// #include "where-selectors/test.typ"
+#include "where-selectors/test.typ"
 #include "text-extraction/test.typ"
 #include "custom-counters/test.typ"
 #include "exclude/test.typ"

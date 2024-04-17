@@ -211,7 +211,8 @@
 ///   - `exclude`: Content to exclude (see `map-tree()`). Can be an array of
 ///    element functions, element function names, or labels.
 #let extract-text(content, ..options) = {
-  (map-tree(x => x, content, ..options),).flatten().join(" ")
+  let out = (map-tree(x => x, content, ..options),).flatten().join(" ")
+  out + "" // ensures none becomes empty string
 }
 
 /// Get word count statistics of a content element.
