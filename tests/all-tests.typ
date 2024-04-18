@@ -11,3 +11,5 @@
 #include "custom-counters/test.typ"
 #include "exclude/test.typ"
 #include "issues/test.typ"
+#include "bibliography/test.typ"
+#include "concat-adjacent-text/test.typ"

@@ -54,19 +54,27 @@
 
   let last-text = as-text(squashed.at(-1))
   for child in children.slice(1) {
-    if last-text == none {
-        squashed.push(child)
-        last-text = as-text(child)
 
+    // don't squash labelled sequences. the label should be
+    // preserved because it might be used to exclude elements
+    let has-label = child.at("label", default: none) != none
+    if has-label { 
+      squashed.push(child)
+      last-text = none
+      continue
+    }
+
+    let this-text = as-text(child)
+    let merge-with-last = last-text != none and this-text != none
+
+    if merge-with-last {
+      // squash into last element
+      last-text = last-text + this-text
+      squashed.at(-1) = text(last-text)
     } else {
-      let this-text = as-text(child)
-      if this-text == none {
-        squashed.push(child)
-        last-text = as-text(child)
-      } else {
-        last-text = last-text + this-text
-        squashed.at(-1) = text(last-text)
-      }
+      // add new element
+      last-text = this-text
+      squashed.push(child)
     }
   }
 

@@ -30,3 +30,15 @@
   One, two, three, four.
   #[That was #total.words, not counting this sentence!] <no-wc>
 ], exclude: <no-wc>)
+
+
+#line(length: 100%)
+
+
+#let el = [
+	One two three four.
+	#[But not me] <not-me>
+]
+
+#rect(el)
+#word-count-of(exclude: <not-me>, el).words
