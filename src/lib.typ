@@ -139,8 +139,8 @@
 /// - exclude (array): Content to skip while traversing the tree, specified by:
 ///   - name, e.g., `"heading"`
 ///   - function, e.g., `heading`
-///   - selector, e.g., `heading.where(level: 1)` (only basic `where`
-///    selectors are supported)
+///   - selector, e.g., `heading.where(level: 1)` (only basic `where` selectors
+///     are supported)
 ///   - label, e.g., `<no-wc>`
 ///  Default value includes equations and elements without child content or
 ///  text:
@@ -218,7 +218,7 @@
 /// - content (content): Content to extract plain text from.
 /// - ..options ( ): Additional named arguments:
 ///   - `exclude`: Content to exclude (see `map-tree()`). Can be an array of
-///    element functions, element function names, or labels.
+///     element functions, element function names, or labels.
 #let extract-text(content, ..options) = {
   let out = (map-tree(x => x, content, ..options),).flatten().join(" ")
   out + "" // ensures none becomes empty string
@@ -244,11 +244,11 @@
 ///  ))
 ///  ```
 /// - method (string): The algorithm to use. Can be:
-///  - `"stringify"`: Convert the content into one big string, then perform the
-///   word count.
-///  - `"bubble"`: Traverse the content tree performing word counts at each
-///   textual leaf node, then "bubble" the results back up (i.e., sum them).
-///  Performance and results may vary by method!
+///   - `"stringify"`: Convert the content into one big string, then perform the
+///     word count.
+///   - `"bubble"`: Traverse the content tree performing word counts at each
+///     textual leaf node, then "bubble" the results back up (i.e., sum them).
+///   Performance and results may vary by method!
 #let word-count-of(
   content,
   exclude: (),
@@ -257,17 +257,16 @@
 ) = {
   let exclude = IGNORED_ELEMENTS + (exclude,).flatten()
 
+  let options = ("bubble", "stringify")
+  assert(method in options, message: "Unknown choice " + repr(method) + ". Options are " + repr(options) + ".")
+
   if method == "bubble" {
     (map-tree(counter, content, exclude: exclude),)
       .filter(x => x != none)
       .flatten()
       .fold(counter(""), dictionary-sum)
-
   } else if method == "stringify" {
     counter(extract-text(content, exclude: exclude))
-
-  } else {
-    panic("Unknown choice", method)
   }
 }
 
@@ -288,7 +287,9 @@
 ///  perform the word count on.
 /// - ..options ( ): Additional named arguments:
 ///   - `exclude`: Content to exclude from word count (see `map-tree()`). Can be
-///    an array of element functions, element function names, or labels.
+///     an array of element functions, element function names, or labels.
+///   - `counter`: A function that accepts a string and returns a dictionary of
+///     counts.
 ///   - `method`: Content traversal method to use (see `word-count-of()`).
 /// -> content
 #let word-count-callback(fn, ..options) = {
@@ -313,7 +314,9 @@
 ///   Content to word count.
 /// - ..options ( ): Additional named arguments:
 ///   - `exclude`: Content to exclude from word count (see `map-tree()`). Can be
-///    an array of element functions, element function names, or labels.
+///     an array of element functions, element function names, or labels.
+///   - `counter`: A function that accepts a string and returns a dictionary of
+///     counts.
 ///   - `method`: Content traversal method to use (see `word-count-of()`).
 /// -> content
 #let word-count-global(content, ..options) = {
@@ -331,18 +334,20 @@
 /// - arg (content, fn):
 ///   Can be:
 ///   #set raw(lang: "typ")
-///   - `content`: A word count is performed for the content and the results are
-///    accessible through `#total-words` and `#total-characters`. This uses a
-///    global state, so should only be used once in a document (e.g., via a
-///    document show rule: `#show: word-count`).
+///   - `content`: A word count is performed for the content and the results are 
+///     accessible through `#total-words` and `#total-characters`. This uses a
+///     global state, so should only be used once in a document (e.g., via a
+///     document show rule: `#show: word-count`).
 ///   - `function`: A callback function accepting a dictionary of word count
-///    results and returning content to be word counted. For example:
-///    ```typ
-///    #word-count(total => [This sentence contains #total.characters letters.])
+///     results and returning content to be word counted. For example:
+///     ```typ
+///     #word-count(total => [This sentence contains #total.characters letters.])
 ///    ```
 /// - ..options ( ): Additional named arguments:
 ///   - `exclude`: Content to exclude from word count (see `map-tree()`). Can be
-///    an array of element functions, element function names, or labels.
+///     an array of element functions, element function names, or labels.
+///   - `counter`: A function that accepts a string and returns a dictionary of
+///     counts.
 ///   - `method`: Content traversal method to use (see `word-count-of()`).
 ///
 /// -> dictionary
