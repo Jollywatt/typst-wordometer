@@ -3,12 +3,11 @@
 
 #let el = [
 	
-	== One
-	=== Not me!
-	==== Two three four five
+	= One
+	== Not me!
+	=== Two three four five
 
 ]
-#el
 
 #rect(el)
-#word-count-of(el, exclude: heading.where(level: 3)))
+#word-count-of(el, exclude: heading.where(depth: 2))

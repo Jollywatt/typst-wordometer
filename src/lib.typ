@@ -160,6 +160,7 @@
 
   let exclude-selectors = exclude.filter(e => type(e) == dictionary and "element-fn" in e)
   for (element-fn, fields) in exclude-selectors {
+    // panic(exclude-selectors, content)
     if fn == element-fn {
       // If all fields in the selector match the element, exclude it
       if not fields.pairs().any(((key, value)) => content.at(key, default: value) != value) {
