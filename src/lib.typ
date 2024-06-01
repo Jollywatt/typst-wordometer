@@ -16,7 +16,7 @@
 /// - string (string): 
 /// -> dictionary
 #let string-word-count(string) = (
-  characters: string.replace(regex("\s+"), "").len(),
+  characters: string.replace(regex("\s+"), "").clusters().len(),
   words: string.matches(regex("\b[\w'’.,\-]+\b")).len(),
   sentences: string.matches(regex("\w+\s*[.?!]")).len(),
 )
