@@ -6,8 +6,14 @@ authors = ["Joseph Wilson (Jollywatt)"]
 repository = "https://github.com/Jollywatt/typst-wordometer"
 license = "MIT"
 description = "Word counts and document statistics."
-exclude = ["README.md", "docs/", "test/"]
+exclude = [
+	"README.md",
+	"docs/",
+	"test/",
+	"pixi.*",
+]
 keywords = [
+	"wordcount",
 	"word",
 	"count",
 	"stats",
