@@ -5,8 +5,26 @@ environments:
     - url: https://conda.anaconda.org/conda-forge/
     packages:
       osx-arm64:
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/typst-0.11.1-h6e96688_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/typst-test-0.0.0.post106+2b4e689-h6e96688_0.conda
 packages:
+- kind: conda
+  name: typst
+  version: 0.11.1
+  build: h6e96688_1
+  build_number: 1
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/typst-0.11.1-h6e96688_1.conda
+  sha256: 099137f7ee65cadb34cf5aa54e9bf2628903adf76a26952ba4b2e1f1e8ffcd47
+  md5: 53fa0134a57fca2c2211b3edb4633239
+  depends:
+  - __osx >=11.0
+  constrains:
+  - __osx >=11.0
+  license: Apache-2.0
+  license_family: Apache
+  size: 10945278
+  timestamp: 1720521723458
 - kind: conda
   name: typst-test
   version: 0.0.0.post106+2b4e689
