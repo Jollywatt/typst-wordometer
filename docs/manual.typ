@@ -33,7 +33,7 @@
 #align(center)[
 	#stack(
 		spacing: 12pt,
-		text(2.6em, `wordometer`),
+		text(2.7em, `wordometer`),
 		[_This manual contains #total-words words._],
 	)
 
