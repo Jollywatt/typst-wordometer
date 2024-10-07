@@ -298,8 +298,8 @@
   fn(stats)
 }
 
-#let total-words = locate(loc => state("total-words").final(loc))
-#let total-characters = locate(loc => state("total-characters").final(loc))
+#let total-words = context state("total-words").final()
+#let total-characters = context state("total-characters").final()
 
 /// Get word count statistics of the given content and store the results in
 /// global state. Should only be used once in the document.
@@ -308,7 +308,7 @@
 ///
 /// The results are accessible anywhere in the document with `#total-words` and
 /// `#total-characters`, which are shortcuts for the final values of states of
-/// the same name (e.g., `#locate(loc => state("total-words").final(loc))`)
+/// the same name (e.g., `#context state("total-words").final()`)
 ///
 /// - content (content):
 ///   Content to word count.
