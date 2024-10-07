@@ -13,3 +13,4 @@ manual-watch = "typst watch docs/manual.typ --root . --open"
 
 [dependencies]
 typst-test = ">=0.0.0.post106+2b4e689,<0.0.1+2b4e689"
+typst = ">=0.11.1,<0.12"
