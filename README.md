@@ -44,3 +44,26 @@ In this document #strike[(excluding me)], there are #total-words words all up.
 ], exclude: <no-wc>)
 ```
 
+## Changelog
+
+### v0.1.4
+
+- Fix deprecated use of `locate()` for Typst `>=0.12.0`
+
+### v0.1.3
+
+(No changes 🤡)
+
+### v0.1.2
+
+- Fix bugs when using labels and where-selectors to exclude elements
+
+### v0.1.1
+
+- Allow excluding elements by passing their element functions
+- Add basic `element.where(..)` selectors
+- Fix crash for figures without captions
+
+### v0.1.0
+
+- Initial version
