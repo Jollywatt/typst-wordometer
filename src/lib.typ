@@ -6,33 +6,33 @@
   c
 }
 
-/// Get a basic word count from a string. 
+/// Get a basic word count from a string.
 ///
 /// Returns a dictionary with keys:
 /// - `characters`: Number of non-whitespace characters.
 /// - `words`: Number of words, defined by `regex("\b[\w'’]+\b")`.
 /// - `sentences`: Number of sentences, defined by `regex("\w+\s*[.?!]")`.
 ///
-/// - string (string): 
+/// - string (string):
 /// -> dictionary
 #let string-word-count(string) = (
   characters: string.replace(regex("\s+"), "").clusters().len(),
-  words: string.matches(regex("\b[\w'’.,\-]+\b")).len(),
-  sentences: string.matches(regex("\w+\s*[.?!]")).len(),
+  words: string.matches(regex("[\p{Han}]|\b[[\w--\p{Han}]'’.,\-]+\b")).len(),
+  sentences: string.matches(regex("\w+\s*[.?!。？！]")).len(),
 )
 
 /// Simplify an array of content by concatenating adjacent text elements.
-/// 
+///
 /// Doesn't preserve content exactly; `smartquote`s are replaced with `'` or
 /// `"`. This is used on `sequence` elements because it improves word counts for
 /// cases like "Digby's", which should count as one word.
 ///
 /// For example, the content #rect[Qu'est-ce *que* c'est !?] is structured as:
-/// 
+///
 /// #[Qu'est-ce *que* c'est !?].children
-/// 
+///
 /// This function simplifies this to:
-/// 
+///
 /// #wordometer.concat-adjacent-text([Qu'est-ce *que* c'est !?].children)
 ///
 /// - children (array): Array of content to simplify.
@@ -58,7 +58,7 @@
     // don't squash labelled sequences. the label should be
     // preserved because it might be used to exclude elements
     let has-label = child.at("label", default: none) != none
-    if has-label { 
+    if has-label {
       squashed.push(child)
       last-text = none
       continue
@@ -154,7 +154,7 @@
   if content == none { return none }
   let exclude = interpret-exclude-patterns(exclude)
   let map-subtree = map-tree.with(f, exclude: exclude)
-  
+
   let fn = repr(content.func())
   let fields = content.fields().keys()
 
@@ -272,7 +272,7 @@
 
 /// Simultaneously take a word count of some content and insert it into that
 /// content.
-/// 
+///
 /// It works by first passing in some dummy results to `fn`, performing a word
 /// count on the content returned, and finally returning the result of passing
 /// the word count retults to `fn`. This happens once --- it doesn't keep
@@ -327,14 +327,14 @@
 }
 
 /// Perform a word count on content.
-/// 
+///
 /// Master function which accepts content (calling `word-count-global()`) or a
 /// callback function (calling `word-count-callback()`).
-/// 
+///
 /// - arg (content, fn):
 ///   Can be:
 ///   #set raw(lang: "typ")
-///   - `content`: A word count is performed for the content and the results are 
+///   - `content`: A word count is performed for the content and the results are
 ///     accessible through `#total-words` and `#total-characters`. This uses a
 ///     global state, so should only be used once in a document (e.g., via a
 ///     document show rule: `#show: word-count`).
