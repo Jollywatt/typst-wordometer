@@ -1,6 +1,6 @@
 #import "/src/lib.typ": *
 #set page(width: 15cm, height: auto)
-
+#set text(font: "Noto Serif CJK JP", fallback: false)
 
 #let el = [
 	滚滚长江东逝水。
