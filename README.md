@@ -46,6 +46,10 @@ In this document #strike[(excluding me)], there are #total-words words all up.
 
 ## Changelog
 
+### v0.1.5
+
+- Count CJK characters as one word each (#9)
+
 ### v0.1.4
 
 - Fix deprecated use of `locate()` for Typst `>=0.12.0`
