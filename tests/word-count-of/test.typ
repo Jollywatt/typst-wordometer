@@ -26,7 +26,7 @@
 		table(columns: 3, [one], [two], [three #super[four]], [#sub[five] six], [seven]),
 		rotate(180deg)[eight],
 		circle[nine ten],
-		
+
 	)
 
 	#figure(circle(fill: red, [eleven]), caption: [twelve thirteen])

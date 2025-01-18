@@ -11,7 +11,9 @@
 
 	吾輩は猫である。名前はまだない。
 
-	This should be, uhh... *four* sentences.
+	하늘을 우러러 한 점 부끄럼이 없기를.
+
+	This should be, uhh... *five* sentences.
 ]
 
 #el

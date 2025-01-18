@@ -16,7 +16,9 @@
 /// -> dictionary | int
 #let string-word-count(string) = (
   characters: string.replace(regex("\s+"), "").clusters().len(),
-  words: string.matches(regex("[\p{Han}]|\b[[\w--\p{Han}]'’.,\-]+\b")).len(),
+  words: string
+    .matches(regex("[\p{Han}\p{Hira}\p{Kana}\p{Hang}]|\b[[\w--[\p{Han}\p{Hira}\p{Kana}\p{Hang}]]'’.,\-]+\b"))
+    .len(),
   sentences: string.matches(regex("\w+\s*[.?!。？！]")).len(),
 )
 
@@ -188,23 +190,17 @@
       children = concat-adjacent-text(children)
     }
 
-    children
-      .map(map-subtree)
-      .filter(x => x != none)
-
+    children.map(map-subtree).filter(x => x != none)
   } else if "term" in fields and "description" in fields {
     (
       map-subtree(content.term),
-      map-subtree(content.description)
-    )
-      .filter(x => x != none)
+      map-subtree(content.description),
+    ).filter(x => x != none)
   } else if fn == "figure" {
     (
       if "figure-body" not in exclude { map-subtree(content.body) },
       if "caption" in content.fields() { map-subtree(content.caption) },
-    )
-      .filter(x => x != none)
-
+    ).filter(x => x != none)
   } else if fn == "styled" {
     map-subtree(content.child)
   } else if "body" in fields {
