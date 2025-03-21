@@ -13,7 +13,7 @@ A small [Typst]("https://typst.app/") package for quick and easy in-document wor
 ## Basic usage
 
 ```typ
-#import "@preview/wordometer:0.1.3": word-count, total-words
+#import "@preview/wordometer:0.1.5": word-count, total-words
 
 #show: word-count
 
