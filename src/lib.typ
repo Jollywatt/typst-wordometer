@@ -17,7 +17,7 @@
 /// -> dictionary
 #let string-word-count(string) = (
   characters: string.replace(regex("\s+"), "").clusters().len(),
-  words: string.matches(regex("[\p{Han}]|\b[[\w--\p{Han}]'’.,\-]+\b")).len(),
+  words: string.matches(regex("[\p{Han}\p{Hira}\p{Kana}\p{Hang}]|\b[[\w--[\p{Han}\p{Hira}\p{Kana}\p{Hang}]]'’.,\-]+\b")).len(),
   sentences: string.matches(regex("\w+\s*[.?!。？！]")).len(),
 )
 
