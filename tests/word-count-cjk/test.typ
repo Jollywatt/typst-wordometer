@@ -1,6 +1,7 @@
 #import "/src/lib.typ": *
 #set page(width: 16cm, height: auto)
-#set text(font: "Noto Serif CJK JP", fallback: false)
+#set text(font: "Go Noto Current", fallback: false)
+
 
 #word-count(totals => [
   Hi，这里是中文测试。 #totals
