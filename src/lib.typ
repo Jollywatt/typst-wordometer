@@ -1,6 +1,6 @@
 #let dictionary-sum(a, b) = {
   let c = (:)
-  for k in a.keys() + b.keys() {
+  for k in (a.keys() + b.keys()).dedup() {
     c.insert(k, a.at(k, default: 0) + b.at(k, default: 0))
   }
   c
@@ -14,7 +14,7 @@
 /// - `sentences`: Number of sentences, defined by `regex("\w+\s*[.?!]")`.
 ///
 /// - string (string):
-/// -> dictionary
+/// -> dictionary | int
 #let string-word-count(string) = (
   characters: string.replace(regex("\s+"), "").clusters().len(),
   words: string.matches(regex("[\p{Han}]|\b[[\w--\p{Han}]'’.,\-]+\b")).len(),
@@ -162,7 +162,6 @@
   for (element-fn, fields) in exclude-selectors {
     // panic(exclude-selectors, content)
     if fn == element-fn {
-      // If all fields in the selector match the element, exclude it
       if not fields.pairs().any(((key, value)) => content.at(key, default: value) != value) {
         return none
       }
@@ -243,12 +242,13 @@
 ///      vowels: lower(s).matches(regex("[aeiou]")).len(),
 ///  ))
 ///  ```
-/// - method (string): The algorithm to use. Can be:
+/// - method (string): The count aggregation method to use. Can be:
 ///   - `"stringify"`: Convert the content into one big string, then perform the
 ///     word count.
-///   - `"bubble"`: Traverse the content tree performing word counts at each
-///     textual leaf node, then "bubble" the results back up (i.e., sum them).
+///   - `"bubble"`: Recursively traverse the content tree performing word counts
+///     at each textual leaf node and propagating them up to parent elements.
 ///   Performance and results may vary by method!
+///   In my experience, `"stringify"` is faster.
 #let word-count-of(
   content,
   exclude: (),
@@ -298,8 +298,27 @@
   fn(stats)
 }
 
-#let total-words = context state("total-words").final()
-#let total-characters = context state("total-characters").final()
+#let global-total(field) = context {
+  let stats = state("wordometer").final()
+  assert(stats != none, message: {
+    "Global word count for "
+    "#total-"+field
+    " is not enabled.\n"
+    "Hint: Please add `#show: word-count` before the document."
+  })
+  assert(field in stats, message: {
+    "Total "
+    repr(field)
+    " not found in word count result.\n"
+    "Hint: the `counter` supplied to the word count returned "
+    repr(stats)
+    "."
+  })
+  stats.at(field)
+}
+
+#let total-words = global-total("words")
+#let total-characters = global-total("characters")
 
 /// Get word count statistics of the given content and store the results in
 /// global state. Should only be used once in the document.
@@ -321,8 +340,7 @@
 /// -> content
 #let word-count-global(content, ..options) = {
   let stats = word-count-of(content, ..options)
-  state("total-words").update(stats.words)
-  state("total-characters").update(stats.characters)
+  state("wordometer").update(stats)
   content
 }
 
