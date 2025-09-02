@@ -49,6 +49,9 @@ In this document #strike[(excluding me)], there are #total-words words all up.
 ### v0.1.5
 
 - Count CJK characters as one word each (#9)
+- Fix deprecation warning comparing types to strings.
+- Put utility functions in `utils` submodule. *Possibly breaking.*
+- Refresh the manual.
 
 ### v0.1.4
 
