@@ -1,7 +1,7 @@
-#import "/src/lib.typ": *
+#import "/src/exports.typ": *
 #set page(width: 15cm, height: auto)
 
-#word-count-callback(stats => box(stroke: blue, inset: 1em)[
+#utils.word-count-callback(stats => box(stroke: blue, inset: 1em)[
 	Guess what, this box contains #stats.words words!
 
 	Full statistics: #stats

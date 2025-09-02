@@ -33,7 +33,7 @@
 ///
 /// This function simplifies this to:
 ///
-/// #wordometer.concat-adjacent-text([Qu'est-ce *que* c'est !?].children)
+/// #wordometer.utils.concat-adjacent-text([Qu'est-ce *que* c'est !?].children)
 ///
 /// - children (array): Array of content to simplify.
 #let concat-adjacent-text(children) = {
@@ -144,7 +144,7 @@
 ///   - label, e.g., `<no-wc>`
 ///  Default value includes equations and elements without child content or
 ///  text:
-///  #wordometer.IGNORED_ELEMENTS.sorted().map(repr).map(raw).join([, ],
+///  #wordometer.utils.IGNORED_ELEMENTS.sorted().map(repr).map(raw).join([, ],
 ///  last: [, and ]).
 ///
 ///  To exclude figures, but include figure captions, pass the name
@@ -219,6 +219,7 @@
 ///   - `exclude`: Content to exclude (see `map-tree()`). Can be an array of
 ///     element functions, element function names, or labels.
 #let extract-text(content, ..options) = {
+  if type(content) == str { return content }
   let out = (map-tree(x => x, content, ..options),).flatten().join(" ")
   out + "" // ensures none becomes empty string
 }
@@ -319,6 +320,7 @@
 
 #let total-words = global-total("words")
 #let total-characters = global-total("characters")
+#let total-sentences = global-total("sentences")
 
 /// Get word count statistics of the given content and store the results in
 /// global state. Should only be used once in the document.
@@ -340,7 +342,10 @@
 /// -> content
 #let word-count-global(content, ..options) = {
   let stats = word-count-of(content, ..options)
-  state("wordometer").update(stats)
+  state("wordometer").update(old-stats => {
+    if old-stats == none { return stats }
+    dictionary-sum(old-stats, stats)
+  })
   content
 }
 

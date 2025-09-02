@@ -1,4 +1,4 @@
-#import "/src/lib.typ": *
+#import "/src/exports.typ": *
 #set page(width: 15cm, height: auto)
 
 #let c = [
@@ -7,11 +7,11 @@
 
 #c
 
-#concat-adjacent-text(c)
+#utils.concat-adjacent-text(c)
 
 #let c = [
 	A want this to be separate. #[From this.] <some-label> Not this either.
 ].children
 #c
 
-#concat-adjacent-text(c)
+#utils.concat-adjacent-text(c)

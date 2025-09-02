@@ -1,4 +1,4 @@
-#import "/src/lib.typ": *
+#import "/src/exports.typ": *
 #set page(width: 15cm, height: auto)
 
 #let el = [
@@ -15,4 +15,4 @@
 ]
 
 #rect(el)
-#raw(extract-text(el))
+#raw(utils.extract-text(el))
