@@ -253,6 +253,12 @@ You can exclude elements by adding an `exclude` option to #fn[word-count()] or #
 		````),
 	)
 
+Figures have a slightly special treatment to exclude the body or caption independently:
+```typ
+#word-count(.., exclude: figure) // exclude both figure body and figure captions
+#word-count(.., exclude: caption) // exclude figure captions but count figure body
+#word-count(.., exclude: "figure-body") // exclude figure body but count captions
+```
 
 == Custom counters
 
