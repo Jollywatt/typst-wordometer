@@ -54,6 +54,12 @@ to ensure CJK fonts are available.
 
 ## Changelog
 
+### v0.1.6
+
+- Improve CJK word counting support (#10)
+- Add support for term list elements (#21)
+- Fix crash with labeled footnotes (#20)
+
 ### v0.1.5
 
 - Count CJK characters as one word each (#9)
