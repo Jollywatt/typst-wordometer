@@ -44,6 +44,14 @@ In this document #strike[(excluding me)], there are #total-words words all up.
 ], exclude: <no-wc>)
 ```
 
+## Development and testing
+
+We use [Tytanic](https://typst-community.github.io/tytanic/) for unit tests. Run with
+```
+tt run --font-path tests/
+```
+to ensure CJK fonts are available.
+
 ## Changelog
 
 ### v0.1.5
