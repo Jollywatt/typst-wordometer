@@ -192,6 +192,12 @@
       .map(map-subtree)
       .filter(x => x != none)
 
+  } else if "term" in fields and "description" in fields {
+    (
+      map-subtree(content.term),
+      map-subtree(content.description)
+    )
+      .filter(x => x != none)
   } else if fn == "figure" {
     (
       if "figure-body" not in exclude { map-subtree(content.body) },
