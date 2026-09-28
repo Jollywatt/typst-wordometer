@@ -1,6 +1,6 @@
 [package]
 name = "wordometer"
-version = "0.1.5"
+version = "0.1.6"
 entrypoint = "src/exports.typ"
 authors = ["Joseph Wilson (Jollywatt)"]
 repository = "https://github.com/Jollywatt/typst-wordometer"
