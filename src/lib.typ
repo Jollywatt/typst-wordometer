@@ -158,6 +158,7 @@
   exclude: IGNORED_ELEMENTS,
 ) = {
   if content == none { return none }
+  if type(content) != std.content { return none }
   let exclude = interpret-exclude-patterns(exclude)
   let map-subtree = map-tree.with(f, exclude: exclude)
 
