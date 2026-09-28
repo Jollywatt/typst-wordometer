@@ -1,6 +1,10 @@
 #import "/src/exports.typ": *
 #set page(width: 15cm, height: auto)
-#set text(font: "Go Noto Current", fallback: false)
+#set text(font: (
+  "Noto Serif JP",
+  "Noto Serif SC",
+  "Noto Serif KR",
+))
 
 #let el = [
 	滚滚长江东逝水。
